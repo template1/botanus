@@ -161,7 +161,7 @@ class MyHandler(DefaultCommandHandler):
  
         if self.imitate_re.match(msg):
             im = markov_bot.imitate(nick, msg, chan)
-            if len(im) > 1:
+            if im is not None:
                 person = msg.replace('imitate ', '').strip()[1:]
                 m = self.b_re.match(person, 1)
                 if m is None:
