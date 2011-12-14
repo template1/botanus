@@ -1,11 +1,15 @@
+import os
 import re
 import sys
 
-if len(sys.argv) != 2:
-    print "usage: %s <input file>" % sys.argv[0]
+import sqlite3
+
+if len(sys.argv) != 3:
+    print "usage: %s <input file> <output sqlite file>" % sys.argv[0]
     sys.exit(1)
 
 input = open(sys.argv[1], 'r')
+db = sys.argv[2]
 
 
 def isModified(origmsg, modmsg, modword):
@@ -95,6 +99,39 @@ for orignum, modnum in botlines:
         if lolFound == False:
             nonlol += 1
 
+createTables = False
+# create tables if DB doesn't exist
+if not os.path.exists(db):
+    createTables = True
+
+conn = sqlite3.connect(db)
+cur = conn.cursor()
+
+if createTables:
+    lines = "lines(id INTEGER PRIMARY KEY AUTOINCREMENT, msg TEXT, origmsg TEXT)"
+    regexs = "regexs(id INTEGER PRIMARY KEY AUTOINCREMENT, regex TEXT)"
+    lols = "lols(line_id INTEGER, regex_id INTEGER, count INTEGER, FOREIGN KEY(line_id) REFERENCES lines(id), FOREIGN KEY(regex_id) REFERENCES regexs(id), PRIMARY KEY(line_id, regex_id))"
+    for table in [lines, regexs, lols]:
+        cur.execute("CREATE TABLE %s" % table)
+
+    for lolre in lol_res.values():
+        cur.execute("insert into regexs (regex) VALUES (?)", [lolre])
+    conn.commit()
+
+regexids = {}
+cur.execute("SELECT id, regex FROM regexs")
+for reid, regex in cur:
+    regexids[regex] = reid
+
 for pair, counts in lolcounts.items():
-    # prepare counts for db output
-    pass
+    orignum, modnum = pair
+    cur.execute("INSERT INTO lines (msg, origmsg) VALUES (?, ?)", [lines[orignum], lines[modnum]])
+    rowid = cur.lastrowid
+
+    for restr, count in counts.items():
+        cur.execute("INSERT INTO lols (line_id, regex_id, count) VALUES (?, ?, ?)", [rowid, regexids[restr], count])
+
+conn.commit()
+
+cur.close()
+conn.close()
