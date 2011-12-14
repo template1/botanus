@@ -1,3 +1,4 @@
+import codecs
 import os
 import re
 import sys
@@ -8,7 +9,7 @@ if len(sys.argv) != 3:
     print "usage: %s <input file> <output sqlite file>" % sys.argv[0]
     sys.exit(1)
 
-input = open(sys.argv[1], 'r')
+input = codecs.open(sys.argv[1], 'r', encoding='utf-8')
 db = sys.argv[2]
 
 
@@ -125,7 +126,6 @@ for reid, regex in cur:
 
 for pair, counts in lolcounts.items():
     orignum, modnum = pair
-
     cur.execute("INSERT INTO lines (msg, origmsg) VALUES (?, ?)", [lines[orignum], lines[modnum]])
     rowid = cur.lastrowid
 
