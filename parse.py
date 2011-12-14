@@ -108,10 +108,10 @@ conn = sqlite3.connect(db)
 cur = conn.cursor()
 
 if createTables:
-    lines = "lines(id INTEGER PRIMARY KEY AUTOINCREMENT, msg TEXT, origmsg TEXT)"
-    regexs = "regexs(id INTEGER PRIMARY KEY AUTOINCREMENT, regex TEXT)"
-    lols = "lols(line_id INTEGER, regex_id INTEGER, count INTEGER, FOREIGN KEY(line_id) REFERENCES lines(id), FOREIGN KEY(regex_id) REFERENCES regexs(id), PRIMARY KEY(line_id, regex_id))"
-    for table in [lines, regexs, lols]:
+    linetbl = "lines(id INTEGER PRIMARY KEY AUTOINCREMENT, msg TEXT, origmsg TEXT)"
+    regextbl = "regexs(id INTEGER PRIMARY KEY AUTOINCREMENT, regex TEXT)"
+    loltbl = "lols(line_id INTEGER, regex_id INTEGER, count INTEGER, FOREIGN KEY(line_id) REFERENCES lines(id), FOREIGN KEY(regex_id) REFERENCES regexs(id), PRIMARY KEY(line_id, regex_id))"
+    for table in [linetbl, regextbl, loltbl]:
         cur.execute("CREATE TABLE %s" % table)
 
     for lolre in lol_res.values():
@@ -125,6 +125,7 @@ for reid, regex in cur:
 
 for pair, counts in lolcounts.items():
     orignum, modnum = pair
+
     cur.execute("INSERT INTO lines (msg, origmsg) VALUES (?, ?)", [lines[orignum], lines[modnum]])
     rowid = cur.lastrowid
 
