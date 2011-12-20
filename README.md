@@ -1,5 +1,9 @@
-This is a surrealist work of art / irc bot inspired by http://code.google.com/p/buttbot/ and based on a port of https://github.com/coleifer/irc/blob/master/bots/markov.py to the oyoyo IRC library.
+This is a surrealist work of art / irc bot inspired by http://code.google.com/p/buttbot/
 
 Dependencies
 ------------
-- oyoyo http://code.google.com/p/oyoyo/
+- Python
+- libconfig (the libconfig++8-dev package on Ubuntu systems)
+- python-libconfig (available at http://github.com/azeey/python-libconfig)
+- oyoyo (available at http://code.google.com/p/oyoyo/)
+- soundexpy (available at http://github.com/l3ib/soundexpy)

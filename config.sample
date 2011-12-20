@@ -1,0 +1,12 @@
+# IRC server to connect to
+host = 'irc.freenode.net'
+port = 6667
+
+# channel to join
+channel = '#gentoo.et'
+
+# bot's nick
+nick = 'botanus'
+
+# word to insert into messages
+modword = 'dick'
