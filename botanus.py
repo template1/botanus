@@ -32,7 +32,7 @@ for key in ['host', 'port', 'channel', 'nick', 'modword']:
 
     config[key] = val
 
-soundword = soundex(config['modword'])
+soundword = soundex(config['modword'])[1:]
 
 
 def connect_callback(cli):
@@ -53,13 +53,17 @@ class MyHandler(DefaultCommandHandler):
         match = False
         newmsg = []
         for word in msg.split(" "):
-            if soundex(word) == soundword:
+            sword = soundex(word)
+            if len(sword) > 1 and sword[1:] == soundword:
                 # we have a candidate for replacement, so decide if we should
-                if not match and random.randint(1, 4) != 4:
-                    break
-                else:
+                # 66% chance if we're already replacing one word; 33% otherwise
+                if match and random.randint(1, 3) != 3:
+                    newmsg.append(config['modword'])
+                elif random.randint(1, 3) == 3:
                     match = True
-                newmsg.append(config['modword'])
+                    newmsg.append(config['modword'])
+                else:
+                    newsmsg.append(word)
             else:
                 newmsg.append(word)
 
